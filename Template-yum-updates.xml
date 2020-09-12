@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2020-09-12T19:14:38Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Yum updates</template>
+            <name>Yum updates</name>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>OS Security</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>OS Pending Reboot</name>
+                    <key>os.reboot.pending</key>
+                    <delay>20m</delay>
+                    <applications>
+                        <application>
+                            <name>OS Security</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}&gt;=1</expression>
+                            <name>System restart is required on {HOST.NAME}</name>
+                            <priority>WARNING</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>OS Pending Updates</name>
+                    <key>os.updates.pending</key>
+                    <units>packages</units>
+                    <applications>
+                        <application>
+                            <name>OS Security</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}&gt;=100</expression>
+                            <name>Pending updates count higher than 100 on {HOST.NAME}</name>
+                            <priority>WARNING</priority>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}&gt;=200</expression>
+                            <name>Pending updates count higher than 200 on {HOST.NAME}</name>
+                            <priority>AVERAGE</priority>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}&gt;=300</expression>
+                            <name>Pending updates count higher than 300 on {HOST.NAME}</name>
+                            <priority>HIGH</priority>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}&gt;=1</expression>
+                            <name>Updates pending on {HOST.NAME}</name>
+                            <priority>INFO</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+            </items>
+        </template>
+    </templates>
+</zabbix_export>
