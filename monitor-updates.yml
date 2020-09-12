@@ -1,0 +1,48 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+
+  - name: copy check_updates.sh script
+    copy:
+      src: /home/ansible/templates/check_updates.sh
+      dest: /root/scripts/check_updates.sh
+      mode: 755
+
+  - name: copy check-reboot-needed.sh script
+    copy:
+      src: /home/ansible/templates/check-reboot-needed.sh
+      dest: /root/scripts/check-reboot-needed.sh
+      mode: 755
+    when: ansible_distribution == 'Sangoma' and ansible_distribution_major_version == '7'
+
+  - name: copy UserParameter on CentOS6 based
+    copy:
+      src: /home/ansible/templates/yum-updates.conf
+      dest: /etc/zabbix/zabbix_agentd.d/yum-updates.conf
+    when: ansible_distribution == 'SHMZ' and ansible_distribution_major_version == '6'
+
+  - name: copy UserParameter on CentOS7 based
+    copy:
+      src: /home/ansible/templates/yum-updates-centos-7.conf
+      dest: /etc/zabbix/zabbix_agentd.d/yum-updates.conf
+    when: ansible_distribution == 'Sangoma' and ansible_distribution_major_version == '7'
+
+  - name: restart zabbix-agent
+    service:
+      name: zabbix-agent
+      state: restarted
+
+  - name: check pending updates cron
+    cron: 
+      name: script to check for pending updates
+      minute: 0
+      hour: '*/12'
+      job: /root/scripts/check_updates.sh
+
+  - name: Install yum-utils
+    yum:
+      name: yum-utils 
+      state: installed
+      update_cache: yes
+    when: ansible_distribution == 'Sangoma' and ansible_distribution_major_version == '7'
